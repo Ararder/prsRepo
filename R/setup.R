@@ -40,7 +40,7 @@
 #' create_new_repo
 #' }
 create_new_repo <- function() {
-  setup_repository()
+  setup_repository(Sys.getenv("PRS_REPO"))
   setup_repo_meta()
 }
 
