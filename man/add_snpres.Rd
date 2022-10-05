@@ -4,22 +4,10 @@
 \alias{add_snpres}
 \title{Add a snpRes folder to the prsRepo file}
 \usage{
-add_snpres(
-  dirpath,
-  common_name = "",
-  pmid = "1",
-  ncase = 0,
-  ncontrol = 0,
-  n = 0,
-  comment = ""
-)
+add_snpres(dirpath, ncase = 0, ncontrol = 0, n = 0, ...)
 }
 \arguments{
 \item{dirpath}{filepath for the folder to copy over}
-
-\item{common_name}{The name of the sumstat in common language}
-
-\item{pmid}{pmid of nimh}
 
 \item{ncase}{n cases}
 
@@ -27,7 +15,7 @@ add_snpres(
 
 \item{n}{total n (for continous traits)}
 
-\item{comment}{free text comment}
+\item{...}{Other arguments}
 }
 \value{
 nothing

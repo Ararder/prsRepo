@@ -1,4 +1,4 @@
-
+utils::globalVariables("prsRepoMeta")
 
 
 
@@ -51,7 +51,7 @@ setup_repository <- function(filepath) {
   if(fs::dir_exists(filepath)) stop("Directory already exists")
 
   fs::dir_create(filepath, recurse = TRUE)
-  fs::file_create(fs::path(filepath, "metadata.tsv"))
+  fs::file_create(fs::path(filepath, "metadata.RDS"))
 
 
 }
@@ -73,12 +73,10 @@ remove_all_extensions <- function(path) {
 #' Add a snpRes folder to the prsRepo file
 #'
 #' @param dirpath filepath for the folder to copy over
-#' @param common_name The name of the sumstat in common language
-#' @param pmid pmid of nimh
 #' @param ncase n cases
 #' @param ncontrol n controls
 #' @param n total n (for continous traits)
-#' @param comment free text comment
+#' @param ... Other arguments
 #'
 #' @return nothing
 #' @export
@@ -86,8 +84,7 @@ remove_all_extensions <- function(path) {
 #' @examples \dontrun{
 #' add_snpres("~/snpres/gwas", common_name = "mdd gwas", pmid=1231313,
 #' ncase=14000, control = 14000, comment = "first mdd GWAS by PGC")}
-add_snpres <- function(dirpath,
-                       common_name="", pmid="1", ncase=0, ncontrol=0, n=0, comment="") {
+add_snpres <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
   stopifnot(fs::dir_exists(dirpath))
   files <- fs::dir_ls(dirpath)
   required <- c("\\.ma$", "\\.snpRes$", "\\.parRes$")
@@ -96,43 +93,35 @@ add_snpres <- function(dirpath,
 
   if(fs::path_file(dirpath) %in% fs::dir_ls(Sys.getenv("PRS_REPO"))) stop("A folder with that name already exists in PRS_REPO")
 
-  add_metadata_row(dirpath, common_name = {{ common_name }}, pmid = {{ pmid}}, ncase = {{ ncase }},
-                   ncontrol = {{ ncontrol }}, n = {{ n}}, comment = {{ comment }})
+  add_metadata_row(dirpath, ncase = {{ ncase }}, ncontrol = {{ ncontrol }}, n = {{ n}}, ...)
 
   fs::dir_copy(path = dirpath, new_path = Sys.getenv("PRS_REPO"))
 
 
 }
 
-add_metadata_row <- function(dirpath,
-                             common_name="", pmid="1", ncase=0, ncontrol=0, n=0, comment="") {
+add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
   #dirpath of new folder to add
   name <- fs::path_file(dirpath)
+  args <- list(...)
 
-  df <- read_repo_meta()
-  new_row <- dplyr::tibble(
-    snpRes={{name}},
-    common_name = {{ common_name }}, pmid = {{ pmid}}, ncase = {{ ncase }},
-    ncontrol = {{ ncontrol }}, n = {{ n}}, date= Sys.Date(), comment = {{ comment }}
-    )
-
-
-  readr::write_tsv(dplyr::add_row(df, new_row), fs::path(Sys.getenv("PRS_REPO"), "metadata.tsv"))
-
+  load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))
+  prsRepoMeta <- dplyr::add_row(prsRepoMeta, snpRes={{name}}, ncase = {{ ncase }}, ncontrol = {{ ncontrol }}, n = {{ n}}, date= Sys.Date(), other = list(args))
+  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
 
 }
-read_repo_meta <- function() {
-  readr::read_tsv(fs::path(Sys.getenv("PRS_REPO"), "metadata.tsv"))
-}
 
+load_metadata <- function(){
+  load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))
+  return(dplyr::tibble(prsRepoMeta))
+}
 
 
 setup_repo_meta <- function() {
-  empty <- dplyr::tibble(
-    snpRes="ts",
-    common_name = "ts", pmid ="ts", ncase = 0,
-    ncontrol = 0, n = 0, date= Sys.Date(), comment = "",
+  prsRepoMeta <-
+    dplyr::tibble(
+    snpRes="ts",ncase = 0, ncontrol = 0, n = 0, date= Sys.Date(), other = list(list(t="x", y="t"))
+    )
 
-  )
-  readr::write_tsv(empty, fs::path(Sys.getenv("PRS_REPO"), "metadata.tsv"))
+  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
 }
