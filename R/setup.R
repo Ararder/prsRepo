@@ -31,6 +31,19 @@
 
 # list all available phenotypes
 
+#' Create the folder structure for a prsRepo, using environmental variables
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples \dontrun{
+#' create_new_repo
+#' }
+create_new_repo <- function() {
+  setup_repository()
+  setup_repo_meta()
+}
+
 
 
 # create a directory at specified location
@@ -57,7 +70,24 @@ remove_all_extensions <- function(path) {
 
 # add a sumstat folder to repository
 
-add_snpres <- function(dirpath, ...) {
+#' Add a snpRes folder to the prsRepo file
+#'
+#' @param dirpath filepath for the folder to copy over
+#' @param common_name The name of the sumstat in common language
+#' @param pmid pmid of nimh
+#' @param ncase n cases
+#' @param ncontrol n controls
+#' @param n total n (for continous traits)
+#' @param comment free text comment
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples \dontrun{
+#' add_snpres("~/snpres/gwas", common_name = "mdd gwas", pmid=1231313,
+#' ncase=14000, control = 14000, comment = "first mdd GWAS by PGC")}
+add_snpres <- function(dirpath,
+                       common_name="", pmid="1", ncase=0, ncontrol=0, n=0, comment="") {
   stopifnot(fs::dir_exists(dirpath))
   files <- fs::dir_ls(dirpath)
   required <- c("\\.ma$", "\\.snpRes$", "\\.parRes$")
@@ -66,15 +96,16 @@ add_snpres <- function(dirpath, ...) {
 
   if(fs::path_file(dirpath) %in% fs::dir_ls(Sys.getenv("PRS_REPO"))) stop("A folder with that name already exists in PRS_REPO")
 
-  add_metadata_row(dirpath, ...)
+  add_metadata_row(dirpath, common_name = {{ common_name }}, pmid = {{ pmid}}, ncase = {{ ncase }},
+                   ncontrol = {{ ncontrol }}, n = {{ n}}, comment = {{ comment }})
 
   fs::dir_copy(path = dirpath, new_path = Sys.getenv("PRS_REPO"))
 
 
 }
 
-add_metadata_row <- function(dirpath,...) {
-  args(...)
+add_metadata_row <- function(dirpath,
+                             common_name="", pmid="1", ncase=0, ncontrol=0, n=0, comment="") {
   #dirpath of new folder to add
   name <- fs::path_file(dirpath)
 
@@ -98,10 +129,9 @@ read_repo_meta <- function() {
 
 setup_repo_meta <- function() {
   empty <- dplyr::tibble(
-    snpRes="",
-    common_name = "", pmid ="", ncase = 0,
+    snpRes="ts",
+    common_name = "ts", pmid ="ts", ncase = 0,
     ncontrol = 0, n = 0, date= Sys.Date(), comment = "",
-    .rows = 0
 
   )
   readr::write_tsv(empty, fs::path(Sys.getenv("PRS_REPO"), "metadata.tsv"))

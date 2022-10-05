@@ -41,13 +41,3 @@ test_that("add_snpres reads in the metadata file", {
 
 })
 
-
-add_metadata_row(
-  "~/bip2021_noUKB/",
-  common_name = "bipolar",
-  ncase =  39000,
-  ncontrol = 120000,
-  comment = "bipolar without UKB, from PGC"
-  )
-
-
