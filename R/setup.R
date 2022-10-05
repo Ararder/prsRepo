@@ -111,7 +111,14 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 
 }
 
-load_metadata <- function(){
+#' Loads the info on all snpRes files in PrsRep
+#'
+#' @return a tibble
+#' @export
+#'
+#' @examples \dontruna{
+#' }
+load_metadata_prsrepo <- function(){
   load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))
   return(dplyr::tibble(prsRepoMeta))
 }
