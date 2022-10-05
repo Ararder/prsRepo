@@ -116,7 +116,8 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 #' @return a tibble
 #' @export
 #'
-#' @examples \dontruna{
+#' @examples \dontrun{
+#' load_metadata_prsrepo()
 #' }
 load_metadata_prsrepo <- function(){
   load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))

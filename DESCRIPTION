@@ -15,5 +15,6 @@ Config/testthat/edition: 3
 Imports: 
     dplyr,
     fs,
+    prsTools,
     utils,
     withr

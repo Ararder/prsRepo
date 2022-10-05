@@ -2,3 +2,5 @@
 
 export(add_snpres)
 export(create_new_repo)
+export(load_metadata_prsrepo)
+export(run_sbayes)
