@@ -15,6 +15,22 @@ sbayes_call <-  prsTools::construct_template(
     "no-mcmc-bin"= ""
   )
 )
+sbayes_call_no_impute <-  prsTools::construct_template(
+  program = "/nfs/home/arvhar/pipelines/gctb/gctb",
+  default_args = list(
+    sbayes = "R",
+    mldm = Sys.getenv("GCTB_LDMATRIX"),
+    robust = "",
+    pi = "0.95,0.02,0.02,0.01",
+    gamma = "0.0,0.01,0.1,1",
+    "ambiguous-snp" = "",
+    "chain-length" = 6000,
+    "burn-in" = 1200,
+    thin = 10,
+    "out-freq" = 10,
+    "no-mcmc-bin"= ""
+  )
+)
 
 #' Title
 #'
@@ -30,7 +46,7 @@ sbayes_call <-  prsTools::construct_template(
 #' @examples \dontrun{
 #' run_sbayes("here/is_my/gwas_sumstat/sumstat.ma", name = "anorexia_2019")
 #' }
-run_sbayes <- function(sumstat, name, impute_n, archive=TRUE, sbatch=FALSE) {
+run_sbayes <- function(sumstat, name, impute_n=TRUE, archive=TRUE, sbatch=FALSE) {
 
   if(missing(name)) name <- fs::path_ext_remove(fs::path_file(sumstat))
   archive <- Sys.getenv("PRS_ARCHIVE")
@@ -53,7 +69,12 @@ run_sbayes <- function(sumstat, name, impute_n, archive=TRUE, sbatch=FALSE) {
     "#SBATCH --mem 40000",
     paste0("#SBATCH -o ", slurmfile)
   )
-  body <- sbayes_call("gwas-summary" = paste0(outdir, "/", fs::path_file(sumstat)), out = snpRes_out)
+  if(impute_n){
+    body <- sbayes_call("gwas-summary" = paste0(outdir, "/", fs::path_file(sumstat)), out = snpRes_out)
+  } else {
+    body <- sbayes_call_no_impute("gwas-summary" = paste0(outdir, "/", fs::path_file(sumstat)), out = snpRes_out)
+  }
+
 
   writeLines(c(header,body), bash_out)
 
