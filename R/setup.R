@@ -108,6 +108,27 @@ delete_metadata_row <- function(snpres) {
 }
 
 
+#' Update an existing row in the metadata
+#'
+#' @param snpres name of snpres file
+#' @param new_row the new updated row
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples \dontrun{
+#'
+#' update_metadata_row("scz2022", new_row)
+#' }
+update_metadata_row <- function(snpres, new_row) {
+  prsRepoMeta <- load_metadata_prsrepo()
+
+  prsRepoMeta[c(prsRepoMeta[["snpRes"]] == snpres),] <- new_row
+
+  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
+}
+
+
 
 
 
