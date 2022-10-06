@@ -1,61 +1,36 @@
 utils::globalVariables("prsRepoMeta")
 
 
-
-# add snpRes
-## nametag
-### common name
-### <pmid>
-### ncase
-### ncontrol
-### n
-### date_added
-
-
-
-
-
-# collect parRes
-
-
-
-# run LDSC
-
-
-
-
-# validate phenotypes
-
-
-
-
-# list all available phenotypes
-
-#' Create the folder structure for a prsRepo, using environmental variables
-#'
-#' @return nothing
-#' @export
-#'
-#' @examples \dontrun{
-#' create_new_repo
-#' }
-create_new_repo <- function() {
-  setup_repository(Sys.getenv("PRS_REPO"))
-  setup_repo_meta()
-}
-
-
-
 # create a directory at specified location
-setup_repository <- function(filepath) {
+setup_repository <- function() {
+  if(Sys.getenv("PRS_REPO") == "") stop("No environment variable for PRS_REPO")
+  filepath <- Sys.getenv("PRS_REPO")
   if(fs::dir_exists(filepath)) stop("Directory already exists")
 
   fs::dir_create(filepath, recurse = TRUE)
-  fs::file_create(fs::path(filepath, "metadata.RDS"))
+
+  prsRepoMeta <-
+    dplyr::tibble(
+      snpRes="ts",ncase = 0, ncontrol = 0, n = 0, date= Sys.Date(), other = list(list(t="x", y="t"))
+    )
+
+  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
 
 
 }
 
+#' Loads the info on all snpRes files in PrsRep
+#'
+#' @return a tibble
+#' @export
+#'
+#' @examples \dontrun{
+#' load_metadata_prsrepo()
+#' }
+load_metadata_prsrepo <- function(){
+  load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))
+  return(dplyr::tibble(prsRepoMeta))
+}
 
 # remove all extensions
 
@@ -111,25 +86,8 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 
 }
 
-#' Loads the info on all snpRes files in PrsRep
-#'
-#' @return a tibble
-#' @export
-#'
-#' @examples \dontrun{
-#' load_metadata_prsrepo()
-#' }
-load_metadata_prsrepo <- function(){
-  load(paste0(Sys.getenv("PRS_REPO"), "/metadata.RDS"))
-  return(dplyr::tibble(prsRepoMeta))
-}
 
 
-setup_repo_meta <- function() {
-  prsRepoMeta <-
-    dplyr::tibble(
-    snpRes="ts",ncase = 0, ncontrol = 0, n = 0, date= Sys.Date(), other = list(list(t="x", y="t"))
-    )
 
-  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
-}
+
+

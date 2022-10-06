@@ -9,14 +9,17 @@ test_that("Errors if directory exists", {
 test_that("creates a directory", {
   dir <- withr::local_tempdir()
   dir2 <- paste0(dir, "/", "test")
-  setup_repository(dir2)
+  withr::local_envvar("PRS_REPO"= dir2)
+  setup_repository()
   expect_true(fs::dir_exists(dir2))
 })
 
 test_that("creates the metadata file", {
-  dir <- withr::local_tempdir()
-  setup_repository(fs::path(dir, "new"))
-  expect_true(fs::file_exists(fs::path(dir, "new/metadata.RDS")))
+  dir <- withr::local_tempdir(pattern = "prsRepo")
+  fs::dir_delete(dir)
+  withr::local_envvar("PRS_REPO"= dir)
+  setup_repository()
+  expect_true(fs::file_exists(fs::path(dir, "metadata.RDS")))
 
 })
 
