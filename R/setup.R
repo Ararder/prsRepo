@@ -86,6 +86,27 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 
 }
 
+#' Remove a row from the metadata file
+#'
+#' @param snpres name of the snpres file that you want to delete (folder name in
+#' prsRepo)
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples \dontrun{
+#' delete_metadata_row("scz2022")
+#' }
+#'
+delete_metadata_row <- function(snpres) {
+  prsRepoMeta <- load_metadata_prsrepo()
+  nb <- nrow(prsRepoMeta)
+
+  prsRepoMeta <- prsRepoMeta[!c(prsRepoMeta[["snpRes"]] == snpres),]
+
+  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
+}
+
 
 
 
