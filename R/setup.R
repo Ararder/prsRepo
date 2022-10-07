@@ -72,6 +72,14 @@ add_snpres <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 
   fs::dir_copy(path = dirpath, new_path = Sys.getenv("PRS_REPO"))
 
+  # gzip ma and snpres file inside copied folder
+  new_path <- fs::path(Sys.getenv("PRS_REPO"), fs::path_file(dirpath))
+  snpres <- fs::dir_ls(new_path, glob ="*.snpRes")
+  ma     <- fs::dir_ls(new_path, glob ="*.ma")
+  system(paste("gzip", snpres))
+  system(paste("gzip", ma))
+
+
 
 }
 

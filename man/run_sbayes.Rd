@@ -4,7 +4,7 @@
 \alias{run_sbayes}
 \title{Title}
 \usage{
-run_sbayes(sumstat, name, impute_n, archive = TRUE, sbatch = FALSE)
+run_sbayes(sumstat, name, impute_n = TRUE, archive = TRUE, sbatch = FALSE)
 }
 \arguments{
 \item{sumstat}{filepath for .ma file to be rescaled}
