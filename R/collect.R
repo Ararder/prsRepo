@@ -117,3 +117,124 @@ get_sumstat_info <- function() {
 
 
 }
+
+
+
+
+
+
+#' Extract information from ldsc log file
+#' Extracts relevant information from the .log output of LDSC. reads in all *.log
+#' files found in dir
+#' @param dir filepath for directory
+#'
+#' @return a tibble
+#' @export
+#' @examples \dontrun{
+#' collect_ldsc("/path/to/ldsc_logs")
+#' }
+#'
+collect_ldsc <- function(dir){
+
+
+  snpres <- fs::path_ext_remove(fs::path_file(fs::dir_ls(dir, glob = "*.log")))
+  safe_munge <- purrr::safely(munge_ldsc_log)
+
+  safe_output <- purrr::map(fs::dir_ls(dir, glob = "*.log"), safe_munge)
+
+
+  na_tib <- dplyr::tibble(
+    lambda_gc = "NA",
+    mean_chi2 = "NA",
+    liability_h2_ldsc = "NA",
+    liability_h2_ldsc_se = "NA",
+    n_snps = "NA",
+    ratio = "NA",
+    ratio_se = "NA",
+    intercept = "NA",
+    intercept_se = "NA"
+  )
+
+  safe_output %>%
+    purrr::map("result") %>%
+    purrr::modify_if(., is.null, ~na_tib) %>%
+    purrr::reduce(dplyr::bind_rows) %>%
+    dplyr::bind_cols(snpres=snpres, .)
+}
+
+
+
+
+
+
+
+
+
+
+munge_ldsc_log <- function(path){
+
+  lambda_gc <- function(string) {
+    lambda_gc <- stringr::str_subset(string, "Lambda GC: ") %>%
+      stringr::str_remove("Lambda GC: ")
+
+    mean_chi2 <- stringr::str_subset(string, "Mean Chi") %>%
+      stringr::str_remove("Mean Chi^2: ") %>%
+      stringr::str_split(" ") %>% .[[1]] %>%
+      .[[3]]
+
+    c(lambda_gc, mean_chi2)
+
+  }
+  lia <- function(string) {
+    res <- stringr::str_subset(string, "Total Liability scale h2: ") %>%
+      stringr::str_remove("Total Liability scale h2: ") %>%
+      stringr::str_split(" ") %>% .[[1]] %>%
+      stringr::str_replace("\\(", "") %>%
+      stringr::str_replace("\\)", "")
+
+    c(res[1], res[2])
+  }
+  intercept <- function(string) {
+    res <- stringr::str_subset(string, "Intercept: ") %>%
+      stringr::str_remove("Intercept: ") %>%
+      stringr::str_split(" ") %>% .[[1]] %>%
+      stringr::str_replace("\\(", "") %>%
+      stringr::str_replace("\\)", "")
+
+    c(res[1], res[2])
+
+  }
+  ratio <- function(string) {
+    res <- stringr::str_subset(string, "Ratio: ") %>%
+      stringr::str_remove("Ratio: ") %>%
+      stringr::str_split(" ") %>% .[[1]] %>%
+      stringr::str_replace("\\(", "") %>%
+      stringr::str_replace("\\)", "")
+
+    c(res[1], res[2])
+  }
+  n_snps <- function(string) {
+    stringr::str_subset(string, "After merging with regression SNP LD") %>%
+      stringr::str_remove("After merging with regression SNP LD, ") %>%
+      stringr::str_remove(" SNPs remain")
+
+  }
+
+  x <- readLines(path)
+  dplyr::tibble(
+    lambda_gc = lambda_gc(x)[1],
+    mean_chi2 = lambda_gc(x)[2],
+    liability_h2_ldsc = lia(x)[1],
+    liability_h2_ldsc_se = lia(x)[2],
+    n_snps = n_snps(x),
+    ratio = ratio(x)[1],
+    ratio_se = ratio(x)[2],
+    intercept = intercept(x)[1],
+    intercept_se = intercept(x)[2]
+  )
+
+
+}
+
+
+

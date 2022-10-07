@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_snpres)
+export(collect_ldsc)
 export(collect_parres)
 export(delete_metadata_row)
 export(get_snpres_info)
