@@ -107,12 +107,17 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 #' }
 #'
 delete_metadata_row <- function(snpres) {
-  prsRepoMeta <- load_metadata_prsrepo()
-  nb <- nrow(prsRepoMeta)
+  if(is.integer) {
+    prsRepoMeta <- load_metadata_prsrepo()
+    prsRepoMeta <- prsRepoMeta[-snpres,]
+    save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
+  } else {
+    stopifnot(is.character(snpres))
+    prsRepoMeta <- load_metadata_prsrepo()
+    prsRepoMeta <- prsRepoMeta[!c(prsRepoMeta[["snpRes"]] == snpres),]
+    save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
+  }
 
-  prsRepoMeta <- prsRepoMeta[!c(prsRepoMeta[["snpRes"]] == snpres),]
-
-  save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
 }
 
 
