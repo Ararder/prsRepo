@@ -18,8 +18,8 @@ Imports:
     data.table,
     dplyr,
     fs,
+    glue,
     magrittr,
     prsTools,
     purrr,
-    stringr,
-
+    stringr

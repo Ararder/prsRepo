@@ -2,14 +2,18 @@
 % Please edit documentation in R/sbayesR_default.R
 \name{run_sbayes}
 \alias{run_sbayes}
-\title{Title}
+\title{Rescale summary statistics with SbayesR
+A wrapper and handler for rescaling effect sizes using sbayesR in GCTB.
+Generate the bash code to run sbayesR, by getting filepaths for environmental
+variables (GCTB, GCTB_LDMATRIX)}
 \usage{
 run_sbayes(sumstat, name, impute_n = TRUE, archive = TRUE, sbatch = FALSE)
 }
 \arguments{
 \item{sumstat}{filepath for .ma file to be rescaled}
 
-\item{name}{give the output a name}
+\item{name}{give the output a name, if not provided, will use filename of
+filepath, with extension removed.}
 
 \item{impute_n}{Should sbayesR impute sample size?}
 
@@ -21,7 +25,10 @@ run_sbayes(sumstat, name, impute_n = TRUE, archive = TRUE, sbatch = FALSE)
 nothing
 }
 \description{
-Title
+Rescale summary statistics with SbayesR
+A wrapper and handler for rescaling effect sizes using sbayesR in GCTB.
+Generate the bash code to run sbayesR, by getting filepaths for environmental
+variables (GCTB, GCTB_LDMATRIX)
 }
 \examples{
 \dontrun{

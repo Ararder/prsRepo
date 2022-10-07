@@ -23,7 +23,7 @@ subset <- c("bip2021_noUKB", "asd2019")
 run_ldsc <- function(subset) {
 
   tmpdir <- fs::dir_create(Sys.getenv("LD_TEMP"))
-  info <- prsRepository::get_snpres_info() %>%
+  info <- get_snpres_info() %>%
     dplyr::mutate(samp = ncase/(ncase+ncontrol)) %>%
     dplyr::select(snpres, samp, pop = pop_prev)
 
