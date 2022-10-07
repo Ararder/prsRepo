@@ -78,7 +78,7 @@ get_snpres_info <- function() {
     purrr::modify_if(., is.null, ~NA_real_)
 
   dplyr::mutate(df, expected_r2=unlist(expected_r2)) %>%
-    dplyr::select(snpres=snpRes,n_eff, ncase, ncontrol, pop_prev, h2, n_snps, expected_r2,liability_h2_sbayes)
+    dplyr::select(snpres=snpRes,n_eff, ncase, ncontrol, pop_prev, h2, liability_h2_sbayes, expected_r2,n_snps)
 
 
 }
