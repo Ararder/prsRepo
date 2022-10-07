@@ -107,7 +107,7 @@ add_metadata_row <- function(dirpath, ncase=0, ncontrol=0, n=0, ...) {
 #' }
 #'
 delete_metadata_row <- function(snpres) {
-  if(is.integer) {
+  if(is.integer(snpres)) {
     prsRepoMeta <- load_metadata_prsrepo()
     prsRepoMeta <- prsRepoMeta[-snpres,]
     save(prsRepoMeta, file=fs::path(Sys.getenv("PRS_REPO"), "metadata.RDS"))
