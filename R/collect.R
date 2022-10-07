@@ -78,7 +78,7 @@ get_snpres_info <- function() {
     purrr::modify_if(., is.null, ~NA_real_)
 
   dplyr::mutate(df, expected_r2=unlist(expected_r2)) %>%
-    dplyr::select(snpres=snpRes,n_eff, ncase, ncontrol, pop_prev, h2, liability_h2_sbayes, expected_r2,n_snps)
+    dplyr::select(snpres=snpRes,n_eff, ncase, ncontrol, pop_prev, h2, liability_h2_sbayes, expected_r2,n_snps.x)
 
 
 }
@@ -205,11 +205,23 @@ munge_ldsc_log <- function(path){
 
   }
   ratio <- function(string) {
-    res <- stringr::str_subset(string, "Ratio: ") %>%
-      stringr::str_remove("Ratio: ") %>%
-      stringr::str_split(" ") %>% .[[1]] %>%
-      stringr::str_replace("\\(", "") %>%
-      stringr::str_replace("\\)", "")
+
+
+    subset <-  stringr::str_subset(string, "Ratio: ")
+
+    # No numeric ratio given if ratio is > 0.
+    if(length(subset) == 0) {
+      res <- c()
+      subset <- stringr::str_subset(string, "Ratio")
+      res[1] <- subset
+      res[2] <- subset
+    } else {
+      res <- subset %>%
+        stringr::str_remove("Ratio: ") %>%
+        stringr::str_split(" ") %>% .[[1]] %>%
+        stringr::str_replace("\\(", "") %>%
+        stringr::str_replace("\\)", "")
+    }
 
     c(res[1], res[2])
   }

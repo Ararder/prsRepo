@@ -32,10 +32,13 @@ sbayes_call_no_impute <-  prsTools::construct_template(
   )
 )
 
-#' Title
-#'
+#' Rescale summary statistics with SbayesR
+#' A wrapper and handler for rescaling effect sizes using sbayesR in GCTB.
+#' Generate the bash code to run sbayesR, by getting filepaths for environmental
+#' variables (GCTB, GCTB_LDMATRIX)
 #' @param sumstat filepath for .ma file to be rescaled
-#' @param name give the output a name
+#' @param name give the output a name, if not provided, will use filename of
+#' filepath, with extension removed.
 #' @param impute_n Should sbayesR impute sample size?
 #' @param archive send output to Sys.getenv("PRS_ARCHIVE")
 #' @param sbatch should the function sbatch the commandline code?
